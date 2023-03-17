@@ -4,8 +4,12 @@ const {
     GraphQLString,
     GraphQLSchema,
     GraphQLList,
+    GraphQLNonNull,
 } = require("graphql");
+
 const { user } = require("./data");
+
+// Queries
 
 const UserType = new GraphQLObjectType({
     name: "User",
@@ -37,6 +41,26 @@ const RootQuery = new GraphQLObjectType({
     }),
 });
 
+// Mutations
+
+const mutation = new GraphQLObjectType({
+    name: "Mutation",
+    fields: {
+        addClient: {
+            type: UserType,
+            args: {
+                name: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            resolve: (parent, { name }) => {
+                user.push({ id: user.length, name });
+
+                return { id: user.length, name };
+            },
+        },
+    },
+});
+
 module.exports = new GraphQLSchema({
     query: RootQuery,
+    mutation,
 });
